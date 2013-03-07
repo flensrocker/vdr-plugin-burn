@@ -1,3 +1,9 @@
+vdr-plugin-burn (0.2.2-0yavdr0~precise) precise; urgency=medium
+
+  * new upstream version
+
+ -- Lars Hanisch <dvb@flensrocker.de>  Thu, 07 Mar 2013 01:31:58 +0100
+
 vdr-plugin-burn (0.2.0~final-8yavdr0~precise) precise; urgency=medium
 
   * refactored vdr-1.7.33-patch

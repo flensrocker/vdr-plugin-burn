@@ -1,4 +1,4 @@
-libvdr-*.so.*                    usr/lib/vdr/plugins/
+#libvdr-*.so.*                    usr/lib/vdr/plugins/
 
 debian/plugin.burn.conf          etc/vdr/plugins/
 vdrburn-archive.sh               usr/share/vdr-plugin-burn/
@@ -17,6 +17,6 @@ burn/vdrburn-dvd.conf		 var/lib/vdr/plugins/burn/
 debian/grab.sh                   usr/share/vdr-plugin-burn/
 debian/commands.vdr-burn.conf    usr/share/vdr/command-hooks/
 
-locale                           usr/share/
+#locale                           usr/share/
 
 debian/vdr-plugin-burn.groups    usr/share/vdr/groups.d/

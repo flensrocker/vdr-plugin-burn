@@ -1,0 +1,64 @@
+--- a/scanner.c
++++ b/scanner.c
+@@ -390,7 +390,7 @@
+ 		logger::debug(format( "scanning ts positions: {0}/{1}-{2}/{3}") % start.first % start.second % end.first % end.second);
+ 
+ 		bool PmtFound = false;
+-		int PatVersion, PmtVersion;
++		int PatVersion, PmtVersion, pmtPid;
+ 
+ 		PatPmtParser.Reset();
+ 		m_vdrFile.seek(start);
+@@ -405,15 +405,17 @@
+ 					if ( Pid == 0)
+ 						PatPmtParser.ParsePat(DataPtr, TS_SIZE);
+ #if VDRVERSNUM < 10733
+-					else if (Pid == PatPmtParser.PmtPid())
++					else if (Pid == PatPmtParser.PmtPid()) {
+ #else
+-                    else if (PatPmtParser.IsPmtPid(Pid))
++					else if (PatPmtParser.IsPmtPid(Pid)) {
+ #endif
++						pmtPid = Pid;
+ 						PatPmtParser.ParsePmt(DataPtr, TS_SIZE);
++      }
+ 					else if (PatPmtParser.GetVersions(PatVersion, PmtVersion)) {
+ 						PmtFound = true;
+ 						int streams = 0;
+-						logger::debug(format( "PID found: Vpid=0x{1}, Vtype=0x{2}") % format::base( PatPmtParser.Vpid(), 16 ) % format::base( PatPmtParser.Vtype(), 16 ));
++						logger::debug(format( "PID found: PMT PID=0x{0}, Vpid=0x{1}, Vtype=0x{2}") % format::base( pmtPid, 16 ) % format::base( PatPmtParser.Vpid(), 16 ) % format::base( PatPmtParser.Vtype(), 16 ));
+ 						if ( PatPmtParser.Vpid() && (PatPmtParser.Vtype() == 2)) { // accept only MPEG2
+ 							track_info track( PatPmtParser.Vpid(), track_info::streamtype_video );
+ 							m_tracks.push_back( track );
+--- a/t/common_functions.c
++++ b/t/common_functions.c
+@@ -12,8 +12,8 @@
+ 	using namespace std;
+ 
+ 	string path = "/video0/Claire's \"Erbe\"";
+-	string escaped = shell_escape(path, "'");
++	string escaped = proctools::shell_escape(path, "'");
+ 	BOOST_CHECK_EQUAL(escaped, "/video0/Claire\\'s \"Erbe\"");
+-	escaped = shell_escape(path, "\"");
++	escaped = proctools::shell_escape(path, "\"");
+ 	BOOST_CHECK_EQUAL(escaped, "/video0/Claire's \\\"Erbe\\\"");
+ }
+--- a/Makefile
++++ b/Makefile
+@@ -233,11 +233,11 @@
+ 
+ TESTOBJS = t/main.o t/common_functions.o
+ 
+-test: $(TESTOBJS) $(OBJS) proctools
+-	$(CXX) $(CXXFLAGS) $(TESTOBJS) $(OBJS) -o $@ $(LIBS) \
+-		-lboost_unit_test_framework -ljpeg -lpthread -ldl -lcap \
+-		$(shell ls $(VDRDIR)/*.o | grep -v vdr.o) $(VDRDIR)/libsi/libsi.a
+-	./test
++#test: $(TESTOBJS) $(OBJS) proctools
++#	$(CXX) $(CXXFLAGS) $(TESTOBJS) $(OBJS) -o $@ $(LIBS) \
++#		-lboost_unit_test_framework -ljpeg -lpthread -ldl -lcap \
++#		$(shell ls $(VDRDIR)/*.o | grep -v vdr.o) $(VDRDIR)/libsi/libsi.a
++#	./test
+ 
+ env:
+ 	@echo "Configuration:"
