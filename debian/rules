@@ -6,12 +6,11 @@
 .PHONY: override_dh_strip override_dh_auto_build override_dh_auto_install
 
 override_dh_auto_build:
-	dh_auto_build -- all
+	INCLUDES=-I/usr/include/vdr dh_auto_build -- all
 	cd debian; /bin/sh pxsup2dast.c
 
 override_dh_auto_clean:
-	$(MAKE) -o .dependencies clean
-	rm -rf locale libvdr-*.so.*
+	dh_auto_clean
 	rm -f debian/pxsup2dast
 
 override_dh_strip:
