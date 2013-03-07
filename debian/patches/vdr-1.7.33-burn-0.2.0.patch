@@ -1,0 +1,32 @@
+--- a/scanner.c
++++ b/scanner.c
+@@ -391,7 +391,7 @@
+ 		logger::debug(format( "scanning ts positions: {0}/{1}-{2}/{3}") % start.first % start.second % end.first % end.second);
+ 
+ 		bool PmtFound = false;
+-		int PatVersion, PmtVersion;
++		int PatVersion, PmtVersion, pmtPid;
+ 
+ 		PatPmtParser.Reset();
+ 		m_vdrFile.seek(start);
+@@ -405,12 +405,18 @@
+ 				if (!PmtFound) {
+ 					if ( Pid == 0)
+ 						PatPmtParser.ParsePat(DataPtr, TS_SIZE);
+-					else if (Pid == PatPmtParser.PmtPid())
++#if VDRVERSNUM < 10733
++					else if (Pid == PatPmtParser.PmtPid()) {
++#else
++					else if (PatPmtParser.IsPmtPid(Pid)) {
++#endif
+ 						PatPmtParser.ParsePmt(DataPtr, TS_SIZE);
++						pmtPid = Pid;
++					}
+ 					else if (PatPmtParser.GetVersions(PatVersion, PmtVersion)) {
+ 						PmtFound = true;
+ 						int streams = 0;
+-						logger::debug(format( "PID found: PMT PID=0x{0}, Vpid=0x{1}, Vtype=0x{2}") % format::base( PatPmtParser.PmtPid(), 16 ) % format::base( PatPmtParser.Vpid(), 16 ) % format::base( PatPmtParser.Vtype(), 16 ));
++						logger::debug(format( "PID found: PMT PID=0x{0}, Vpid=0x{1}, Vtype=0x{2}") % format::base( pmtPid, 16 ) % format::base( PatPmtParser.Vpid(), 16 ) % format::base( PatPmtParser.Vtype(), 16 ));
+ 						if ( PatPmtParser.Vpid() && (PatPmtParser.Vtype() == 2)) { // accept only MPEG2
+ 							track_info track( PatPmtParser.Vpid(), track_info::streamtype_video );
+ 							m_tracks.push_back( track );
