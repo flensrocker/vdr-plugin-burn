@@ -123,7 +123,7 @@
  
  ### The name of the distribution archive:
  
-@@ -98,17 +50,9 @@
+@@ -98,24 +50,16 @@
  
  ### Includes and Defines (add further entries here):
  
@@ -143,6 +143,14 @@
  
  ifdef ENABLE_DMH_ARCHIVE
  DEFINES += -DENABLE_DMH_ARCHIVE
+ OBJS += chain-archive.o
+ endif
+ 
+-SUBDIRS = proctools # tinyxml
++SUBDIRS = proctools
+ SUBLIBS=$(shell for i in $(SUBDIRS); do echo $$i/lib$$i.a; done)
+ 
+ LIBS += $(SUBLIBS)
 @@ -140,9 +84,18 @@
  
  DEFINES += -DTMPDIR='"$(TMPDIR)"' -DDVDDEV='"$(DVDDEV)"' -DISODIR='"$(ISODIR)"'
@@ -214,7 +222,7 @@
  	$(CXX) $(CXXFLAGS) $^ -o $@ $(LIBS)
  
 +$(SOFILE): $(OBJS) $(SUBLIBS)
-+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) -o $@
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) $(LIBS) -o $@
 +
 +install-lib: $(SOFILE)
 +	install -D $^ $(DESTDIR)$(LIBDIR)/$^.$(APIVERSION)
